@@ -379,6 +379,31 @@ function parseDetails(raw){
   try{return JSON.parse(raw)}catch{return {}}
 }
 function cleanName(s){ return (s||'').replace(/\s+/g,' ').trim(); }
+
+function shortPlayerName(fullName){
+  const name = cleanName(fullName);
+  if(!name) return 'Batter';
+
+  const parts = name.split(' ').filter(Boolean);
+
+  // One-word name: show it as-is.
+  if(parts.length === 1) return parts[0];
+
+  // Use the player's FULL NAME received from the DCL site,
+  // then display it compactly as:
+  // FirstName + LastName initial
+  //
+  // Examples:
+  // "Rohit Karn" -> "Rohit K."
+  // "Shridhar Mukund Kulkarni" -> "Shridhar K."
+  // "Ajay Kumar Reddy Bireddy" -> "Ajay B."
+  const firstName = parts[0];
+  const lastName = parts[parts.length - 1];
+  const lastInitial = lastName.charAt(0).toUpperCase();
+
+  return `${firstName} ${lastInitial}.`;
+}
+
 function abbrev(name){
   const words=cleanName(name).split(' ').filter(Boolean);
   if(words.length===1) return words[0].slice(0,3).toUpperCase();
