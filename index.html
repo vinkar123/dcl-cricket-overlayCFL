@@ -769,7 +769,7 @@ function render(payload){
 
   if(active===1){
     ctx.textContent='';
-    eq.textContent=`${bowlingTeam.toUpperCase()} BOWLING`;
+    eq.textContent='';
     rrr.textContent='RRR —';
   } else {
     const target=(i1.runs??0)+1;
@@ -777,8 +777,16 @@ function render(payload){
     const need=Math.max(0,target-current);
     const left=ballsRemaining(i2.overs,20);
     const calcRrr=(left>0 && need>0)?(need/(left/6)).toFixed(2):'—';
+
     ctx.textContent='';
-    eq.textContent = extra.message || `TARGET ${target} • NEED ${need} FROM ${left} BALLS`;
+
+    // Exact requested bottom-ribbon chase format during LIVE 2nd innings:
+    // TARGET xxx | NEED xx FROM xx BALLS
+    if(!matchEnded){
+      eq.textContent=`TARGET ${target} | NEED ${need} FROM ${left} BALLS`;
+    }
+
+    // RRR stays in the dedicated center score section.
     rrr.textContent=`RRR ${calcRrr}`;
   }
 
