@@ -108,20 +108,20 @@ html,body{
 }
 .batter-name{
   letter-spacing:.1px;
-  font-size:16px;
+  font-size:18px;
   font-weight:900;
   line-height:1;
   overflow:hidden;text-overflow:ellipsis
 }
 .batter-stat{
-  font-size:14px;
+  font-size:16px;
   font-weight:900;
   color:var(--muted);
   white-space:nowrap
 }
 .team-name{
   letter-spacing:.15px;
-  font-size:23px;
+  font-size:25px;
   font-weight:900;
   line-height:1;
   color:var(--bat-primary);
@@ -197,7 +197,7 @@ html,body{
   min-width:0
 }
 .bowler-line{
-  font-size:17px;
+  font-size:19px;
   font-weight:900;
   line-height:1.1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
@@ -205,7 +205,7 @@ html,body{
 .bowling-team-name{
   letter-spacing:.15px;
   margin-top:8px;
-  font-size:23px;
+  font-size:25px;
   font-weight:900;
   line-height:1;
   color:var(--bowl-primary);
@@ -214,7 +214,7 @@ html,body{
 
 /* Thin attached bottom ribbon */
 .infobar{
-  min-height:52px;
+  min-height:56px;
   display:grid;
   grid-template-columns:1.16fr 1.47fr 1.72fr .95fr;
   align-items:center;
@@ -231,7 +231,7 @@ html,body{
   border-radius:6px;
   background:rgba(16,64,118,.40);
   border-left:4px solid var(--bat-primary);
-  font-size:18px;
+  font-size:20px;
   font-weight:900;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
@@ -240,13 +240,13 @@ html,body{
   border-radius:6px;
   background:rgba(241,180,44,.14);
   border-left:4px solid var(--gold);
-  font-size:18px;
+  font-size:20px;
   font-weight:900;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 #equation{
   text-align:center;
-  font-size:19px;
+  font-size:21px;
   font-weight:900;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
@@ -256,16 +256,16 @@ html,body{
   align-items:center;
   gap:6px;
   min-width:0;
-  font-size:17px;
+  font-size:19px;
   font-weight:900;
   white-space:nowrap
 }
 .label{opacity:.78}
 #balls{display:inline-flex;gap:3px}
 .ball{
-  min-width:28px;height:28px;padding:0 3px;border-radius:14px;
+  min-width:30px;height:30px;padding:0 3px;border-radius:15px;
   display:inline-flex;align-items:center;justify-content:center;
-  background:#edf2f7;color:#11243c;font-size:14px;font-weight:900
+  background:#edf2f7;color:#11243c;font-size:16px;font-weight:900
 }
 .ball.w{background:#d52f43;color:#fff}
 .ball.boundary{background:#278fd0;color:#fff}
@@ -275,21 +275,21 @@ html,body{
   .mainbar{height:80px;grid-template-columns:34% 32% 34%}
   .batting-panel{grid-template-columns:72px minmax(0,1fr);padding:10px 17px 10px 10px}
   .team-logo-big{width:48px;height:48px}
-  .batter-name{font-size:15px}
-  .batter-stat{font-size:13px}
-  .team-name,.bowling-team-name{font-size:23px}
+  .batter-name{font-size:17px}
+  .batter-stat{font-size:15px}
+  .team-name,.bowling-team-name{font-size:25px}
   .team-abbr{font-size:27px}
   .main-score{font-size:42px}
   .main-overs{font-size:17px}
   .rate-stack{font-size:16px}
-  .bowler-line{font-size:14px}
+  .bowler-line{font-size:16px}
   .infobar{
     grid-template-columns:1.15fr 1.42fr 1.58fr .95fr;
     gap:4px;padding:5px 8px
   }
-  #extrasInfo,#partnershipInfo{font-size:16px;padding:6px 7px}
-  #equation{font-size:17px}
-  .info-right{font-size:15px}
+  #extrasInfo,#partnershipInfo{font-size:18px;padding:6px 7px}
+  #equation{font-size:19px}
+  .info-right{font-size:17px}
 }
 </style>
 </head>
@@ -311,11 +311,11 @@ html,body{
       <div class="batting-lines">
         <div class="batters-inline">
           <div class="batter-line">
-            <span id="b1name" class="batter-name">B1 Batter</span>
+            <span id="b1name" class="batter-name">Batter</span>
             <span id="b1stat" class="batter-stat">0 (0)</span>
           </div>
           <div class="batter-line">
-            <span id="b2name" class="batter-name">B2 Batter</span>
+            <span id="b2name" class="batter-name">Batter</span>
             <span id="b2stat" class="batter-stat">0 (0)</span>
           </div>
         </div>
@@ -564,8 +564,8 @@ function render(payload){
 
   const b1=activeInn.batter1||{};
   const b2=activeInn.batter2||{};
-  document.getElementById('b1name').textContent = `B1 ${shortPlayerName(cleanName(b1.name)||'Batter 1')}`;
-  document.getElementById('b2name').textContent = `B2 ${shortPlayerName(cleanName(b2.name)||'Batter 2')}`;
+  document.getElementById('b1name').textContent = `${shortPlayerName(cleanName(b1.name)||'Batter 1')}`;
+  document.getElementById('b2name').textContent = `${shortPlayerName(cleanName(b2.name)||'Batter 2')}`;
   document.getElementById('b1stat').textContent = `${b1.run??0}${b1.onStrike?'*':''} (${b1.ball??0})`;
   document.getElementById('b2stat').textContent = `${b2.run??0}${b2.onStrike?'*':''} (${b2.ball??0})`;
   document.getElementById('battingTeamLabel').textContent = battingTeam;
