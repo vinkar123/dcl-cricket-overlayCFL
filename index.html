@@ -75,7 +75,7 @@ html,body{
 }
 
 .team-logo-big{
-  width:52px;height:52px;border-radius:50%;
+  width:54px;height:54px;border-radius:50%;
   object-fit:contain;background:#fff;
   border:1px solid #d7dfe8;padding:3px;box-sizing:border-box
 }
@@ -108,20 +108,20 @@ html,body{
 }
 .batter-name{
   letter-spacing:.1px;
-  font-size:18px;
+  font-size:20px;
   font-weight:900;
   line-height:1;
   overflow:hidden;text-overflow:ellipsis
 }
 .batter-stat{
-  font-size:16px;
+  font-size:18px;
   font-weight:900;
   color:var(--muted);
   white-space:nowrap
 }
 .team-name{
   letter-spacing:.15px;
-  font-size:25px;
+  font-size:27px;
   font-weight:900;
   line-height:1;
   color:var(--bat-primary);
@@ -151,7 +151,7 @@ html,body{
 .score-panel>*{position:relative;z-index:1}
 
 .team-abbr{
-  font-size:27px;
+  font-size:29px;
   font-weight:900;
   text-align:center;
   padding-right:10px;
@@ -160,18 +160,18 @@ html,body{
 .score-stack{text-align:center}
 .main-score{
   font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;
-  font-size:42px;
+  font-size:44px;
   font-weight:900;
   line-height:.92;
   letter-spacing:-1px
 }
 .main-overs{
-  font-size:16px;
+  font-size:18px;
   font-weight:900;
   margin-top:7px
 }
 .rate-stack{
-  font-size:15px;
+  font-size:17px;
   font-weight:900;
   line-height:1.25;
   text-align:center;
@@ -197,7 +197,7 @@ html,body{
   min-width:0
 }
 .bowler-line{
-  font-size:19px;
+  font-size:21px;
   font-weight:900;
   line-height:1.1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
@@ -205,7 +205,7 @@ html,body{
 .bowling-team-name{
   letter-spacing:.15px;
   margin-top:8px;
-  font-size:25px;
+  font-size:27px;
   font-weight:900;
   line-height:1;
   color:var(--bowl-primary);
@@ -214,7 +214,7 @@ html,body{
 
 /* Thin attached bottom ribbon */
 .infobar{
-  min-height:56px;
+  min-height:60px;
   display:grid;
   grid-template-columns:1.16fr 1.47fr 1.72fr .95fr;
   align-items:center;
@@ -231,7 +231,7 @@ html,body{
   border-radius:6px;
   background:rgba(16,64,118,.40);
   border-left:4px solid var(--bat-primary);
-  font-size:20px;
+  font-size:22px;
   font-weight:900;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
@@ -240,13 +240,13 @@ html,body{
   border-radius:6px;
   background:rgba(241,180,44,.14);
   border-left:4px solid var(--gold);
-  font-size:20px;
+  font-size:22px;
   font-weight:900;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 #equation{
   text-align:center;
-  font-size:21px;
+  font-size:23px;
   font-weight:900;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
@@ -256,16 +256,16 @@ html,body{
   align-items:center;
   gap:6px;
   min-width:0;
-  font-size:19px;
+  font-size:21px;
   font-weight:900;
   white-space:nowrap
 }
 .label{opacity:.78}
 #balls{display:inline-flex;gap:3px}
 .ball{
-  min-width:30px;height:30px;padding:0 3px;border-radius:15px;
+  min-width:32px;height:32px;padding:0 3px;border-radius:16px;
   display:inline-flex;align-items:center;justify-content:center;
-  background:#edf2f7;color:#11243c;font-size:16px;font-weight:900
+  background:#edf2f7;color:#11243c;font-size:18px;font-weight:900
 }
 .ball.w{background:#d52f43;color:#fff}
 .ball.boundary{background:#278fd0;color:#fff}
@@ -274,22 +274,22 @@ html,body{
 @media(max-width:900px){
   .mainbar{height:80px;grid-template-columns:34% 32% 34%}
   .batting-panel{grid-template-columns:72px minmax(0,1fr);padding:10px 17px 10px 10px}
-  .team-logo-big{width:48px;height:48px}
-  .batter-name{font-size:17px}
-  .batter-stat{font-size:15px}
-  .team-name,.bowling-team-name{font-size:25px}
-  .team-abbr{font-size:27px}
-  .main-score{font-size:42px}
-  .main-overs{font-size:17px}
-  .rate-stack{font-size:16px}
-  .bowler-line{font-size:16px}
+  .team-logo-big{width:50px;height:50px}
+  .batter-name{font-size:19px}
+  .batter-stat{font-size:17px}
+  .team-name,.bowling-team-name{font-size:27px}
+  .team-abbr{font-size:29px}
+  .main-score{font-size:44px}
+  .main-overs{font-size:19px}
+  .rate-stack{font-size:18px}
+  .bowler-line{font-size:18px}
   .infobar{
     grid-template-columns:1.15fr 1.42fr 1.58fr .95fr;
     gap:4px;padding:5px 8px
   }
-  #extrasInfo,#partnershipInfo{font-size:18px;padding:6px 7px}
-  #equation{font-size:19px}
-  .info-right{font-size:17px}
+  #extrasInfo,#partnershipInfo{font-size:20px;padding:6px 7px}
+  #equation{font-size:21px}
+  .info-right{font-size:19px}
 }
 </style>
 </head>
