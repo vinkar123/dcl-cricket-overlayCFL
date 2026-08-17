@@ -536,6 +536,120 @@ function applyTeamColors(){
   root.style.setProperty('--bowl-text',contrastText(bowlColor));
 }
 
+
+function firstDefined(obj, keys, fallback=undefined){
+  for(const k of keys){
+    if(obj && obj[k] !== undefined && obj[k] !== null) return obj[k];
+  }
+  return fallback;
+}
+function playerNameFromRow(row){
+  return cleanName(firstDefined(row,[
+    'name','playerName','batterName','batsmanName','batsman_name',
+    'bowlerName','bowler_name','full_name','fullName'
+  ],''));
+}
+function scorecardRoot(payload,host){
+  return host?.scorecard
+      || deepFind(payload,'scorecard')
+      || host?.scoreCard
+      || deepFind(payload,'scoreCard')
+      || {};
+}
+function collectNamedRows(node, out=[], path=''){
+  if(!node || typeof node!=='object') return out;
+  if(Array.isArray(node)){
+    node.forEach((v,i)=>collectNamedRows(v,out,`${path}[${i}]`));
+    return out;
+  }
+
+  const nm=playerNameFromRow(node);
+  if(nm) out.push({row:node,path});
+
+  for(const [k,v] of Object.entries(node)){
+    if(v && typeof v==='object') collectNamedRows(v,out,path?`${path}.${k}`:k);
+  }
+  return out;
+}
+function isBattingRow(item){
+  const r=item.row||{};
+  const p=(item.path||'').toLowerCase();
+  const hasBatStats=[
+    'run','runs','ball','balls','four','fours','six','sixes',
+    'strikeRate','strike_rate','sr','dismissal','out'
+  ].some(k=>r[k]!==undefined);
+  return hasBatStats || /bat|batsman|batter/.test(p);
+}
+function isBowlingRow(item){
+  const r=item.row||{};
+  const p=(item.path||'').toLowerCase();
+  const hasBowlStats=[
+    'over','overs','maiden','maidens','wicket','wickets','economy','econ'
+  ].some(k=>r[k]!==undefined);
+  return hasBowlStats || /bowl|bowler/.test(p);
+}
+function normalizeBatterRow(row){
+  if(!row) return {};
+  return {
+    name: playerNameFromRow(row),
+    run: Number(firstDefined(row,['run','runs','r'],0)) || 0,
+    ball: Number(firstDefined(row,['ball','balls','b'],0)) || 0,
+    onStrike: false
+  };
+}
+function normalizeBowlerRow(row){
+  if(!row) return {};
+  return {
+    name: playerNameFromRow(row),
+    wicket: Number(firstDefined(row,['wicket','wickets','wkts','w'],0)) || 0,
+    run: Number(firstDefined(row,['run','runs','runsConceded','r'],0)) || 0,
+    over: firstDefined(row,['over','overs','o'],'0.0')
+  };
+}
+function completedScorecardPlayers(payload,host,active){
+  const sc=scorecardRoot(payload,host);
+  const all=collectNamedRows(sc);
+
+  // Prefer rows that explicitly belong to the completed active innings.
+  const inningsHints=[
+    `inning${active}`,`innings${active}`,`inning_${active}`,`innings_${active}`,
+    active===1?'team1':'team2'
+  ];
+
+  let scoped=all.filter(x=>{
+    const p=(x.path||'').toLowerCase();
+    return inningsHints.some(h=>p.includes(h));
+  });
+  if(!scoped.length) scoped=all;
+
+  let bats=scoped.filter(isBattingRow);
+  let bowls=scoped.filter(isBowlingRow);
+
+  // Remove duplicate names while preserving scorecard order.
+  const uniqueByName=(arr)=>{
+    const seen=new Set(), result=[];
+    for(const x of arr){
+      const n=playerNameFromRow(x.row).toLowerCase();
+      if(!n || seen.has(n)) continue;
+      seen.add(n); result.push(x);
+    }
+    return result;
+  };
+  bats=uniqueByName(bats);
+  bowls=uniqueByName(bowls);
+
+  // In a completed innings, the bottom of the batting card represents
+  // the final batters in the innings. Show the final two named batters.
+  const lastBatters=bats.slice(-2).map(x=>normalizeBatterRow(x.row));
+  const lastBowler=bowls.length ? normalizeBowlerRow(bowls[bowls.length-1].row) : {};
+
+  return {
+    batter1:lastBatters[0]||{},
+    batter2:lastBatters[1]||{},
+    bowler:lastBowler
+  };
+}
+
 function render(payload){
   const host=latestMatchHost(payload)||payload;
   const details=parseDetails(host.score_details ?? deepFind(payload,'score_details'));
@@ -544,6 +658,9 @@ function render(payload){
   const i1=details.inning1||{};
   const i2=details.inning2||{};
   const activeInn=details[`inning${active}`]||{};
+
+  const matchEnded = Boolean(details.isMatchEnded ?? host.isMatchEnded ?? deepFind(payload,'isMatchEnded'));
+  const live = Boolean(details.isLive ?? host.isLive ?? deepFind(payload,'isLive'));
 
   const team1=extra.team1 || i1.teamName || 'Team 1';
   const team2=extra.team2 || i2.teamName || 'Team 2';
@@ -562,17 +679,45 @@ function render(payload){
   document.getElementById('batLogo').style.display=batLogoPath?'block':'none';
   document.getElementById('bowlLogo').style.display=bowlLogoPath?'block':'none';
 
-  const b1=activeInn.batter1||{};
-  const b2=activeInn.batter2||{};
-  document.getElementById('b1name').textContent = `${shortPlayerName(cleanName(b1.name)||'Batter 1')}`;
-  document.getElementById('b2name').textContent = `${shortPlayerName(cleanName(b2.name)||'Batter 2')}`;
-  document.getElementById('b1stat').textContent = `${b1.run??0}${b1.onStrike?'*':''} (${b1.ball??0})`;
-  document.getElementById('b2stat').textContent = `${b2.run??0}${b2.onStrike?'*':''} (${b2.ball??0})`;
+  // PLAYER SOURCE RULE:
+  // - While match is LIVE: use DCL live innings fields.
+  // - Once match is OVER: use the completed scorecard.
+  let b1={}, b2={}, bow={};
+
+  if(!matchEnded && live){
+    b1=activeInn.batter1||{};
+    b2=activeInn.batter2||{};
+    bow=activeInn.bowler||{};
+  } else if(matchEnded){
+    const completed=completedScorecardPlayers(payload,host,active);
+    b1=completed.batter1||{};
+    b2=completed.batter2||{};
+    bow=completed.bowler||{};
+
+    // Defensive fallback only if the completed scorecard does not expose a row.
+    if(!cleanName(b1.name)) b1=activeInn.batter1||{};
+    if(!cleanName(b2.name)) b2=activeInn.batter2||{};
+    if(!cleanName(bow.name)) bow=activeInn.bowler||{};
+  } else {
+    // Pre-live / unusual DCL state: retain whatever live fields are available.
+    b1=activeInn.batter1||{};
+    b2=activeInn.batter2||{};
+    bow=activeInn.bowler||{};
+  }
+
+  document.getElementById('b1name').textContent =
+    shortPlayerName(cleanName(b1.name)||'Batter');
+  document.getElementById('b2name').textContent =
+    shortPlayerName(cleanName(b2.name)||'Batter');
+  document.getElementById('b1stat').textContent =
+    `${b1.run??0}${(!matchEnded && b1.onStrike)?'*':''} (${b1.ball??0})`;
+  document.getElementById('b2stat').textContent =
+    `${b2.run??0}${(!matchEnded && b2.onStrike)?'*':''} (${b2.ball??0})`;
   document.getElementById('battingTeamLabel').textContent = battingTeam;
 
-  const bow=activeInn.bowler||{};
-  document.getElementById('bowlerName').textContent = cleanName(bow.name)||'Bowler';
-  document.getElementById('bowlerStat').textContent = bow.name
+  document.getElementById('bowlerName').textContent =
+    cleanName(bow.name) ? shortPlayerName(bow.name) : 'Bowler';
+  document.getElementById('bowlerStat').textContent = cleanName(bow.name)
     ? `${bow.wicket??0}/${bow.run??0} (${bow.over??0})`
     : '—';
   document.getElementById('bowlingTeamLabel').textContent = bowlingTeam;
@@ -621,9 +766,6 @@ function render(payload){
   const ctx=document.getElementById('inningsContext');
   const eq=document.getElementById('equation');
   const rrr=document.getElementById('rrr');
-
-  const matchEnded = details.isMatchEnded ?? host.isMatchEnded ?? deepFind(payload,'isMatchEnded');
-  const live = details.isLive ?? host.isLive ?? deepFind(payload,'isLive');
 
   if(active===1){
     ctx.textContent='';
