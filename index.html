@@ -4,276 +4,277 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DCL Modern Live Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#071a32;
-  --navy2:#0b2e4b;
-  --blue:#0e5b93;
-  --cyan:#2aa3d6;
-  --light:#f7f9fc;
-  --ink:#0e2035;
-  --muted:#52657b;
-  --gold:#f1ad2b;
-  --danger:#c93d4b;
+  --bat-primary:#0d4f9b;
+  --bat-secondary:#062a61;
+  --bat-text:#ffffff;
+  --bowl-primary:#0d4f9b;
+  --ink:#08172c;
+  --muted:#41516b;
+  --footer:#06172b;
+  --gold:#f1b42c;
 }
 html,body{
-  margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;
-  font-family:Aptos,"Segoe UI",Arial,Helvetica,sans-serif
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:transparent!important;
+  font-family:"Roboto Condensed","Arial Narrow","Segoe UI",Arial,sans-serif
 }
 #brand{
-  position:absolute; left:1.6vw; top:1.6vh;
-  width:88px; height:88px;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(255,255,255,.94);
-  border-radius:12px;
-  padding:5px;
-  box-sizing:border-box;
-  filter:drop-shadow(0 3px 8px rgba(0,0,0,.28));
+  position:absolute;left:1vw;top:1vh;width:64px;height:64px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.94);border-radius:9px;padding:3px;
+  box-sizing:border-box;filter:drop-shadow(0 2px 6px rgba(0,0,0,.24))
 }
-#brand img{
-  width:100%; height:100%; object-fit:contain; border-radius:9px;
-}
+#brand img{width:100%;height:100%;object-fit:contain;border-radius:6px}
+
 #overlay{
-  position:absolute; left:1.4vw; right:1.4vw; bottom:1.2vh;
-  filter:drop-shadow(0 3px 8px rgba(0,0,0,.35));
+  position:absolute;left:1vw;right:1vw;bottom:1vh;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.40))
 }
 #err{
-  display:none; margin-bottom:4px;
-  background:#7f1d1d;color:#fff;padding:8px 10px;border-radius:8px;font-size:12px
+  display:none;margin-bottom:4px;background:#8b1e25;color:#fff;
+  padding:6px 9px;border-radius:7px;font-size:13px;font-weight:900
 }
+
+/* Matches the approved compact broadcast layout */
 .mainbar{
-  height:70px;
+  height:126px;
   display:grid;
-  grid-template-columns: 1.12fr 1fr 1.12fr;
-  border-radius:10px 10px 0 0;
+  grid-template-columns:34% 32% 34%;
+  border:2px solid var(--bat-primary);
+  border-bottom:none;
+  border-radius:18px 18px 0 0;
   overflow:hidden;
+  background:#fff
 }
-.side{
-  background:rgba(248,250,253,.97);
+
+.batting-panel{
+  position:relative;
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  padding:12px 24px 12px 14px;
+  background:#fff;
   color:var(--ink);
-  display:flex;align-items:center;gap:10px;
-  padding:5px 10px;
+  z-index:2
 }
-.side.right{justify-content:flex-end}
-.team-logo{
-  width:42px;height:42px;border-radius:50%;
-  object-fit:contain;background:white;border:1px solid #d8e0e8;padding:3px;box-sizing:border-box;flex:0 0 auto;
+.batting-panel::after{
+  content:"";
+  position:absolute;
+  right:-24px;top:0;
+  width:48px;height:100%;
+  background:#fff;
+  transform:skewX(-15deg);
+  border-right:2px solid var(--bat-primary);
+  z-index:-1
 }
-.player-block{min-width:0;flex:1}
-.player-line{
-  display:flex;align-items:baseline;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+
+.team-logo-big{
+  width:68px;height:68px;border-radius:50%;
+  object-fit:contain;background:#fff;
+  border:1px solid #d7dfe8;padding:3px;box-sizing:border-box
 }
-.player-name{
-  font-size:18px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+
+.batting-lines{
+  display:grid;
+  grid-template-rows:1fr 1fr 1.1fr;
+  gap:7px;
+  min-width:0
 }
-.player-stat{
-  font-size:16px;color:var(--muted);font-weight:800
+.batter-line{
+  display:flex;align-items:baseline;gap:7px;
+  white-space:nowrap;min-width:0
 }
-.subline{
-  margin-top:4px;font-size:16px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+.batter-name{
+  letter-spacing:.1px;
+  font-size:18px;
+  font-weight:900;
+  line-height:1;
+  overflow:hidden;text-overflow:ellipsis
 }
-.center-score{
-  background:linear-gradient(135deg,var(--blue),#143c75);
-  color:#fff;
-  display:grid;grid-template-columns:auto 1fr auto;
-  align-items:center;gap:9px;
-  padding:5px 11px;
-  border-left:2px solid rgba(255,255,255,.15);
-  border-right:2px solid rgba(255,255,255,.15);
+.batter-stat{
+  font-size:15px;
+  font-weight:900;
+  color:var(--muted);
+  white-space:nowrap
 }
-.center-team{
-  font-size:25px;font-weight:900;letter-spacing:.3px;text-transform:uppercase;
+.team-name{
+  letter-spacing:.15px;
+  font-size:27px;
+  font-weight:900;
+  line-height:1;
+  color:var(--bat-primary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+
+/* Approved center proportions, but dynamic batting-team color */
+.score-panel{
+  display:grid;
+  grid-template-columns:18% 49% 33%;
+  align-items:center;
+  padding:0 18px 0 26px;
+  color:var(--bat-text);
+  background:
+    linear-gradient(105deg,var(--bat-primary) 0%,var(--bat-secondary) 58%,var(--bat-primary) 100%);
+  position:relative;
+  overflow:hidden
+}
+.score-panel::before{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.10),transparent 45%),
+    repeating-linear-gradient(120deg,transparent 0 58px,rgba(255,255,255,.035) 58px 61px);
+  pointer-events:none
+}
+.score-panel>*{position:relative;z-index:1}
+
+.team-abbr{
+  font-size:31px;
+  font-weight:900;
+  text-align:center;
+  padding-right:10px;
+  border-right:1px solid currentColor
 }
 .score-stack{text-align:center}
-.big-score{font-size:36px;font-weight:900;line-height:1}
-.score-meta{font-size:17px;font-weight:900;color:#d8ecff;margin-top:2px}
-.rate{
-  text-align:right;font-size:18px;font-weight:900;color:#d8ecff;line-height:1.25
-}
-.infobar{
-  min-height:38px;
-  background:rgba(7,26,50,.98);
-  color:white;
-  display:grid;
-  grid-template-columns:1.15fr 1.05fr 1.45fr 1.35fr;
-  align-items:center;
-  padding:0 9px;
-  border-radius:0 0 10px 10px;
-  font-size:16px;
+.main-score{
+  font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  font-size:49px;
   font-weight:900;
-  letter-spacing:.1px;
+  line-height:.92;
+  letter-spacing:-1px
 }
-.info-left{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.info-mid{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.info-right{display:flex;justify-content:flex-end;align-items:center;gap:5px;overflow:hidden}
-.ball{
-  min-width:20px;height:20px;padding:0 4px;border-radius:10px;
-  display:inline-flex;align-items:center;justify-content:center;
-  background:#e8eef4;color:#14263c;font-size:12px;font-weight:900
-}
-.ball.w{background:var(--danger);color:white}
-.ball.boundary{background:var(--cyan);color:white}
-.ball.extra{background:var(--gold);color:#1c2a3d}
-.label{color:#9eb9d2;margin-right:2px}
-@media(max-width:900px){
-  .mainbar{height:54px}
-  .team-logo{width:38px;height:38px}
-  .center-team{font-size:15px}
-  .big-score{font-size:23px}
-  .player-name{font-size:12px}
-  .infobar{font-size:10px}
-}
-
-/* Mobile-stream readability enhancements */
-#extrasInfo,
-#partnershipInfo{
-  font-size:16px;
+.main-overs{
+  font-size:20px;
   font-weight:900;
+  margin-top:7px
 }
-#equation{
+.rate-stack{
   font-size:18px;
   font-weight:900;
-  color:#ffffff;
+  line-height:1.35;
+  text-align:center;
+  padding-left:13px;
+  border-left:1px solid currentColor
 }
-#inningsContext{
-  font-size:15px;
-  font-weight:900;
+
+/* Right side matches approved image. Team B name same size as Team A. */
+.bowling-panel{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 82px;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px 12px 24px;
+  background:#fff;
+  border-left:2px solid var(--bowl-primary);
+  border-top:2px solid var(--bowl-primary);
+  border-right:2px solid var(--bowl-primary);
+  color:var(--ink)
 }
-#teamShort{
-  font-size:25px;
-  font-weight:900;
+.bowling-copy{
+  text-align:right;
+  min-width:0
 }
-#mainScore{
-  font-size:36px;
-  font-weight:900;
-}
-#mainOvers{
+.bowler-line{
   font-size:17px;
   font-weight:900;
+  line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-#crr,#rrr{
-  font-size:18px;
+.bowling-team-name{
+  letter-spacing:.15px;
+  margin-top:18px;
+  font-size:27px;
   font-weight:900;
-}
-#balls .ball{
-  min-width:24px;
-  height:24px;
-  border-radius:12px;
-  font-size:12px;
+  line-height:1;
+  color:var(--bowl-primary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 
-/* Do NOT shrink the key information on phone-sized renderers. */
-@media(max-width:900px){
-  .mainbar{height:68px;}
-  .team-logo{width:44px;height:44px;}
-  .player-name{font-size:17px !important;}
-  .player-stat{font-size:15px !important;}
-  .subline{font-size:15px !important;font-weight:800 !important;}
-  .center-team{font-size:23px !important;}
-  .big-score{font-size:34px !important;}
-  .score-meta{font-size:16px !important;}
-  .rate,#crr,#rrr{font-size:17px !important;}
-  .infobar{min-height:36px;font-size:15px !important;}
-  #equation{font-size:17px !important;}
-  #extrasInfo,#partnershipInfo{font-size:15px !important;}
-}
-
-
-/* Fixed Extras + Partnership lower bar */
+/* Thin attached bottom ribbon */
 .infobar{
-  column-gap:14px;
-  padding:0 18px;
+  min-height:46px;
+  display:grid;
+  grid-template-columns:1.16fr 1.47fr 1.72fr .95fr;
+  align-items:center;
+  gap:12px;
+  padding:6px 15px;
+  border:2px solid var(--bat-primary);
+  border-top:1px solid rgba(255,255,255,.08);
+  border-radius:0 0 18px 18px;
+  background:linear-gradient(90deg,#05162a,#071d37 50%,#05162a);
+  color:#fff
 }
 #extrasInfo{
-  font-size:16px;
+  padding:7px 11px;
+  border-radius:6px;
+  background:rgba(16,64,118,.40);
+  border-left:4px solid var(--bat-primary);
+  font-size:15px;
   font-weight:900;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 #partnershipInfo{
-  font-size:17px;
+  padding:7px 11px;
+  border-radius:6px;
+  background:rgba(241,180,44,.14);
+  border-left:4px solid var(--gold);
+  font-size:15px;
   font-weight:900;
-  color:#0a2440;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 #equation{
-  font-size:18px;
+  text-align:center;
+  font-size:16px;
   font-weight:900;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 .info-right{
-  font-size:15px;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  font-size:14px;
   font-weight:900;
+  white-space:nowrap
 }
+.label{opacity:.78}
+#balls{display:inline-flex;gap:3px}
+.ball{
+  min-width:24px;height:24px;padding:0 3px;border-radius:12px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#edf2f7;color:#11243c;font-size:11px;font-weight:900
+}
+.ball.w{background:#d52f43;color:#fff}
+.ball.boundary{background:#278fd0;color:#fff}
+.ball.extra{background:#f1b42c;color:#17263a}
+
 @media(max-width:900px){
+  .mainbar{height:118px;grid-template-columns:34% 32% 34%}
+  .batting-panel{grid-template-columns:72px minmax(0,1fr);padding:10px 17px 10px 10px}
+  .team-logo-big{width:60px;height:60px}
+  .batter-name{font-size:15px}
+  .batter-stat{font-size:13px}
+  .team-name,.bowling-team-name{font-size:23px}
+  .team-abbr{font-size:27px}
+  .main-score{font-size:42px}
+  .main-overs{font-size:17px}
+  .rate-stack{font-size:16px}
+  .bowler-line{font-size:14px}
   .infobar{
-    grid-template-columns:1.28fr .95fr 1.55fr 1.25fr !important;
-    column-gap:8px;
-    padding:0 10px;
+    grid-template-columns:1.15fr 1.42fr 1.58fr .95fr;
+    gap:7px;padding:5px 8px
   }
-  #extrasInfo{font-size:14px !important;}
-  #partnershipInfo{font-size:15px !important;}
-  #equation{font-size:16px !important;}
-  .info-right{font-size:13px !important;}
+  #extrasInfo,#partnershipInfo{font-size:13px;padding:6px 7px}
+  #equation{font-size:14px}
+  .info-right{font-size:12px}
 }
-
-
-/* HIGH-CONTRAST FIX: Extras + Partnership must always be visible */
-.infobar{
-  background:rgba(7,26,50,.985) !important;
-  color:#ffffff !important;
-  overflow:visible !important;
-}
-#extrasInfo{
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-  color:#ffffff !important;
-  background:rgba(42,163,214,.22) !important;
-  border-left:4px solid #2aa3d6 !important;
-  border-radius:5px !important;
-  padding:6px 9px !important;
-  font-size:17px !important;
-  font-weight:900 !important;
-  line-height:1.1 !important;
-  white-space:nowrap !important;
-}
-#partnershipInfo{
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-  color:#ffffff !important;
-  background:rgba(241,173,43,.20) !important;
-  border-left:4px solid #f1ad2b !important;
-  border-radius:5px !important;
-  padding:6px 9px !important;
-  font-size:18px !important;
-  font-weight:900 !important;
-  line-height:1.1 !important;
-  white-space:nowrap !important;
-}
-#equation{
-  color:#ffffff !important;
-}
-@media(max-width:900px){
-  .infobar{
-    min-height:48px !important;
-    grid-template-columns:1.45fr 1.05fr 1.55fr 1.2fr !important;
-    column-gap:7px !important;
-    padding:4px 8px !important;
-  }
-  #extrasInfo{
-    font-size:15px !important;
-    padding:5px 6px !important;
-  }
-  #partnershipInfo{
-    font-size:16px !important;
-    padding:5px 6px !important;
-  }
-  #equation{
-    font-size:16px !important;
-  }
-  .info-right{
-    font-size:13px !important;
-  }
-}
-
 </style>
 </head>
 <body>
@@ -289,49 +290,49 @@ html,body{
   <div id="err"></div>
 
   <div class="mainbar">
-    <div class="side">
-      <img id="batLogo" class="team-logo" alt="">
-      <div class="player-block">
-        <div class="player-line">
-          <span id="b1name" class="player-name">Batter 1</span>
-          <span id="b1stat" class="player-stat">0 (0)</span>
+    <div class="batting-panel">
+      <img id="batLogo" class="team-logo-big" alt="">
+      <div class="batting-lines">
+        <div class="batter-line">
+          <span id="b1name" class="batter-name">Batter 1</span>
+          <span id="b1stat" class="batter-stat">0 (0)</span>
         </div>
-        <div class="player-line">
-          <span id="b2name" class="player-name">Batter 2</span>
-          <span id="b2stat" class="player-stat">0 (0)</span>
+        <div class="batter-line">
+          <span id="b2name" class="batter-name">Batter 2</span>
+          <span id="b2stat" class="batter-stat">0 (0)</span>
         </div>
-        <div id="battingTeamLabel" class="subline">Batting side</div>
+        <div id="battingTeamLabel" class="team-name">Batting Team</div>
       </div>
     </div>
 
-    <div class="center-score">
-      <div id="teamShort" class="center-team">TEAM</div>
+    <div class="score-panel">
+      <div id="teamShort" class="team-abbr">TEAM</div>
       <div class="score-stack">
-        <div id="mainScore" class="big-score">0/0</div>
-        <div id="mainOvers" class="score-meta">OVERS 0.0</div>
+        <div id="mainScore" class="main-score">0/0</div>
+        <div id="mainOvers" class="main-overs">OVERS 0.0</div>
       </div>
-      <div class="rate">
+      <div class="rate-stack">
         <div id="crr">CRR 0.00</div>
         <div id="rrr">RRR —</div>
       </div>
     </div>
 
-    <div class="side right">
-      <div class="player-block">
-        <div class="player-line" style="justify-content:flex-end">
-          <span id="bowlerName" class="player-name">Bowler</span>
-          <span id="bowlerStat" class="player-stat">0/0 (0.0)</span>
+    <div class="bowling-panel">
+      <div class="bowling-copy">
+        <div class="bowler-line">
+          <span id="bowlerName">Bowler</span>
+          <span id="bowlerStat">0/0 (0.0)</span>
         </div>
-        <div id="bowlingTeamLabel" class="subline" style="text-align:right">Bowling side</div>
+        <div id="bowlingTeamLabel" class="bowling-team-name">Bowling Team</div>
       </div>
-      <img id="bowlLogo" class="team-logo" alt="">
+      <img id="bowlLogo" class="team-logo-big" alt="">
     </div>
   </div>
 
   <div class="infobar">
-    <div id="extrasInfo" class="info-left">EXTRAS 0 • WD 0 NB 0 B 0 LB 0</div>
-    <div id="partnershipInfo" class="info-mid">CP - 0 R in 0 B</div>
-    <div id="equation" class="info-mid">Match information loading…</div>
+    <div id="extrasInfo">EXTRAS 0 • WD 0 NB 0 B 0 LB 0</div>
+    <div id="partnershipInfo">Current Partnership 0 runs in 0 balls</div>
+    <div id="equation">Match information loading…</div>
     <div class="info-right">
       <span id="inningsContext"></span>
       <span class="label">THIS OVER</span>
@@ -426,6 +427,72 @@ function currentPartnership(inn){
   return {runs:Math.max(0,currentRuns-lastWicketRuns),balls};
 }
 
+
+function clamp255(v){ return Math.max(0,Math.min(255,Math.round(v))); }
+function rgbHex(r,g,b){
+  return '#'+[r,g,b].map(v=>clamp255(v).toString(16).padStart(2,'0')).join('');
+}
+function hexRgb(h){
+  h=(h||'#000000').replace('#','');
+  if(h.length===3) h=h.split('').map(x=>x+x).join('');
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function blendHex(a,b,t){
+  const A=hexRgb(a), B=hexRgb(b);
+  return rgbHex(A[0]*(1-t)+B[0]*t,A[1]*(1-t)+B[1]*t,A[2]*(1-t)+B[2]*t);
+}
+function contrastText(hex){
+  const [r,g,b]=hexRgb(hex);
+  const lum=(0.2126*r+0.7152*g+0.0722*b)/255;
+  return lum>0.61 ? '#07172c' : '#ffffff';
+}
+function extractDominantColor(img, fallback='#174d8a'){
+  try{
+    const c=document.createElement('canvas');
+    c.width=48;c.height=48;
+    const x=c.getContext('2d',{willReadFrequently:true});
+    x.drawImage(img,0,0,48,48);
+    const d=x.getImageData(0,0,48,48).data;
+    const buckets=new Map();
+    for(let i=0;i<d.length;i+=16){
+      const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];
+      if(a<170) continue;
+      const max=Math.max(r,g,b),min=Math.min(r,g,b);
+      if(max>238 && min>228) continue;   // white
+      if(max<28) continue;               // near black
+      if(max-min<30) continue;           // gray
+      const qr=Math.min(255,Math.round(r/32)*32);
+      const qg=Math.min(255,Math.round(g/32)*32);
+      const qb=Math.min(255,Math.round(b/32)*32);
+      const key=`${qr},${qg},${qb}`;
+      buckets.set(key,(buckets.get(key)||0)+1);
+    }
+    let best=null,count=-1;
+    for(const [k,v] of buckets){
+      if(v>count){best=k;count=v;}
+    }
+    if(!best) return fallback;
+    const [r,g,b]=best.split(',').map(Number);
+    let hex=rgbHex(r,g,b);
+    // Pull extremes toward a richer broadcast midtone.
+    hex=blendHex(hex,'#173f70',0.18);
+    return hex;
+  }catch(e){ return fallback; }
+}
+function applyTeamColors(){
+  const root=document.documentElement;
+  const bat=document.getElementById('batLogo');
+  const bowl=document.getElementById('bowlLogo');
+  const batColor=extractDominantColor(bat,'#174d8a');
+  const bowlColor=extractDominantColor(bowl,'#174d8a');
+  root.style.setProperty('--bat-primary',batColor);
+  root.style.setProperty('--bat-secondary',blendHex(batColor,'#05172d',0.52));
+  root.style.setProperty('--bat-accent',blendHex(batColor,'#ffffff',0.10));
+  root.style.setProperty('--bat-text',contrastText(batColor));
+  root.style.setProperty('--bowl-primary',bowlColor);
+  root.style.setProperty('--bowl-text',contrastText(bowlColor));
+}
+
 function render(payload){
   const host=latestMatchHost(payload)||payload;
   const details=parseDetails(host.score_details ?? deepFind(payload,'score_details'));
@@ -443,8 +510,12 @@ function render(payload){
   const batLogoPath = active===1 ? extra.team1Logo : extra.team2Logo;
   const bowlLogoPath = active===1 ? extra.team2Logo : extra.team1Logo;
 
-  document.getElementById('batLogo').src=logoUrl(batLogoPath||'');
-  document.getElementById('bowlLogo').src=logoUrl(bowlLogoPath||'');
+  const batImg=document.getElementById('batLogo');
+  const bowlImg=document.getElementById('bowlLogo');
+  batImg.onload=applyTeamColors;
+  bowlImg.onload=applyTeamColors;
+  batImg.src=logoUrl(batLogoPath||'');
+  bowlImg.src=logoUrl(bowlLogoPath||'');
   document.getElementById('batLogo').style.display=batLogoPath?'block':'none';
   document.getElementById('bowlLogo').style.display=bowlLogoPath?'block':'none';
 
@@ -491,7 +562,7 @@ function render(payload){
   }
 
   document.getElementById('partnershipInfo').textContent =
-    `CP - ${cpRuns} R in ${cpBalls} B`;
+    `Current Partnership ${cpRuns} runs in ${cpBalls} balls`;
 
   const balls=document.getElementById('balls');
   balls.innerHTML='';
